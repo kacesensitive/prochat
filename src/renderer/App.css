@@ -1,0 +1,257 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Ubuntu&display=swap');
+
+.body {
+  position: relative;
+  color: white;
+  height: 100vh;
+  background-color: transparent;
+  /* background: linear-gradient(
+    200.96deg,
+    #d81159 -29.09%,
+    #0496ff 51.77%,
+    #d81159 129.35%
+  ); */
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-app-region: drag;
+}
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.controls {
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  width: 100%;
+  height: 20px;
+  background-color: transparent;
+  opacity: 0;
+}
+
+.controls:hover {
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  height: 30px;
+  width: 100%;
+  background-image: linear-gradient(#00e5ff, #0496ff),
+    linear-gradient(#00e5ff, #0496ff) !important;
+  opacity: 78;
+  transition: all 0.2s;
+}
+
+#scroller * {
+  overflow-anchor: none;
+}
+
+#anchor {
+  overflow-anchor: auto;
+  height: 1px;
+}
+
+.settings {
+  padding: 15px;
+  min-height: 20pc !important;
+  overflow: auto;
+  display: block;
+  background-color: white;
+  min-width: 250px;
+  margin: 0 auto;
+  text-align: center;
+  border-top: 10px solid #00e5ff;
+  border-bottom: 10px solid #0496ff;
+  background-image: linear-gradient(#00e5ff, #0496ff),
+    linear-gradient(#00e5ff, #0496ff);
+  background-size: 10px 100%;
+  background-position: 0 0, 100% 0;
+  background-repeat: no-repeat;
+  -webkit-app-region: no-drag;
+}
+
+.settings::-webkit-scrollbar {
+  display: none;
+}
+
+.opacitySlider {
+  max-width: 70%;
+  margin: 0 auto;
+}
+
+.usernameInput {
+  max-width: 20%;
+  min-width: 200px;
+}
+
+.colorPicker {
+  margin: 0 auto;
+}
+
+button {
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  appearance: none;
+  font-size: 1.3rem;
+  box-shadow: 0px 8px 28px -6px rgba(24, 39, 75, 0.12),
+    0px 18px 88px -4px rgba(24, 39, 75, 0.14);
+  transition: all ease-in 0.1s;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+button:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+li {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  height: fit-content;
+  width: fit-content;
+  margin: 10px;
+}
+
+a:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+html {
+}
+
+@keyframes fadeIn {
+  0%,
+  50% {
+    transform: translateY(100%);
+    opacity: 0.1;
+  }
+
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadeIn {
+  0%,
+  50% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0%,
+  50% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadeIn {
+  0%,
+  50% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes fadeIn {
+  0%,
+  50% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.message {
+  display: flex;
+  gap: 16px;
+  padding: 8px 16px;
+  font-size: 0.8em;
+  align-items: baseline;
+  font-family: 'Ubuntu', sans-serif;
+  overflow-wrap: break-word;
+}
+.p {
+  overflow-wrap: break-word;
+  max-width: 100%;
+  vertical-align: baseline;
+  line-height: 1.4;
+}
+
+.img {
+  width: 20px;
+  height: auto;
+  vertical-align: middle;
+}
+
+.vip {
+  background: rgba(#e005b9, 0.1);
+  border-top: 1px solid #e005b9;
+  border-bottom: 1px solid #e005b9;
+  margin-top: -1px;
+  border-radius: 20px;
+}
+
+.moderator {
+  background: rgba(#00ad03, 0.1);
+  border-top: 1px solid #00ad03;
+  border-bottom: 1px solid #00ad03;
+  margin-top: -1px;
+  border-radius: 20px;
+}
+
+.twitch-emote {
+  max-height: 25px;
+}
+
+.chat {
+  min-width: 100% !important;
+  padding-left: 12px;
+  padding-right: 12px;
+  -webkit-app-region: drag;
+}
+
+.popup_tabs {
+  width: unset !important;
+  min-width: 267px;
+}
