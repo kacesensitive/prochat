@@ -2,9 +2,13 @@ import { Message } from 'types/Messages';
 
 export const filterCommonBots = (author: string, enabled: boolean) => {
   if (enabled) {
-    return ['Streamelements', 'Streamlabs', 'Moobot', 'tighwin'].includes(
-      author
-    );
+    return [
+      'Streamelements',
+      'Streamlabs',
+      'Moobot',
+      'Nightbot',
+      'Fossabot',
+    ].includes(author);
   }
   return false;
 };

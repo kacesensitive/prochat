@@ -6,6 +6,8 @@ import Store from 'electron-store';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
+import windowStateKeeper from 'electron-window-state';
+
 const store = new Store();
 
 class AppUpdater {
@@ -69,9 +71,16 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
+  const mainWindowState = windowStateKeeper({
+    defaultWidth: 600,
+    defaultHeight: 700,
+  });
+
   mainWindow = new BrowserWindow({
-    width: 600,
-    height: 700,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
     minHeight: 500,
     minWidth: 500,
     frame: false,
@@ -86,6 +95,8 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
+
+  mainWindowState.manage(mainWindow);
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 

@@ -30,6 +30,7 @@ import {
   IoMdInformationCircleOutline,
 } from 'react-icons/io';
 import { MdSettingsApplications, MdPowerSettingsNew } from 'react-icons/md';
+import { AiFillCaretDown, AiFillCheckCircle } from 'react-icons/ai';
 import Autolinker from 'autolinker';
 import {
   filterCommonBots,
@@ -38,12 +39,7 @@ import {
   filterNonSubs,
   filterNonVips,
 } from 'main/filters';
-// import Store from 'electron-store';
-// import os from 'os';
-
-// import storage from 'electron-json-storage';
-
-// storage.setDataPath(os.tmpdir());
+import icon from '../../assets/icon.png';
 
 const { Panel } = Collapse;
 
@@ -67,10 +63,10 @@ const Chat = () => {
     if (window.electron.store.get('username')) {
       return window.electron.store.get('username');
     }
-    return 'icon33';
+    return '';
   });
 
-  const [messageLimit, setMessageLimit] = useState<string>('15');
+  const [messageLimit, setMessageLimit] = useState<string>('10');
 
   const [preserveTwitchColorChange, setPreserveTwitchColorChange] = useState(
     () => {
@@ -80,6 +76,68 @@ const Chat = () => {
       return false;
     }
   );
+
+  const [subOverride, setSubOverride] = useState(() => {
+    if (window.electron.store.get('subOverride')) {
+      return window.electron.store.get('subOverride');
+    }
+    return false;
+  });
+
+  const [
+    subscriberPreserveTwitchColorChange,
+    setSubscriberPreserveTwitchColorChange,
+  ] = useState(() => {
+    if (window.electron.store.get('subscriberPreserveTwitchColorChange')) {
+      return window.electron.store.get('subscriberPreserveTwitchColorChange');
+    }
+    return false;
+  });
+
+  const [ftcOverride, setFtcOverride] = useState(() => {
+    if (window.electron.store.get('ftcOverride')) {
+      return window.electron.store.get('ftcOverride');
+    }
+    return false;
+  });
+
+  const [ftcPreserveTwitchColorChange, setFtcPreserveTwitchColorChange] =
+    useState(() => {
+      if (window.electron.store.get('ftcPreserveTwitchColorChange')) {
+        return window.electron.store.get('ftcPreserveTwitchColorChange');
+      }
+      return false;
+    });
+
+  const [vipOverride, setVipOverride] = useState(() => {
+    if (window.electron.store.get('vipOverride')) {
+      return window.electron.store.get('vipOverride');
+    }
+    return false;
+  });
+
+  const [vipPreserveTwitchColorChange, setVipPreserveTwitchColorChange] =
+    useState(() => {
+      if (window.electron.store.get('vipPreserveTwitchColorChange')) {
+        return window.electron.store.get('vipPreserveTwitchColorChange');
+      }
+      return false;
+    });
+
+  const [modOverride, setModOverride] = useState(() => {
+    if (window.electron.store.get('modOverride')) {
+      return window.electron.store.get('modOverride');
+    }
+    return false;
+  });
+
+  const [modPreserveTwitchColorChange, setModPreserveTwitchColorChange] =
+    useState(() => {
+      if (window.electron.store.get('modPreserveTwitchColorChange')) {
+        return window.electron.store.get('modPreserveTwitchColorChange');
+      }
+      return false;
+    });
 
   const [filterCommonBotsEnabled, setFilterCommonBotsEnabled] = useState(() => {
     if (window.electron.store.get('filterCommonBotsEnabled')) {
@@ -130,9 +188,90 @@ const Chat = () => {
     return { a: 1, b: 219, g: 255, r: 0 };
   });
 
+  const [usernameShadow, setUsernameShadow] = useState(() => {
+    if (window.electron.store.get('usernameShadow')) {
+      return window.electron.store.get('usernameShadow');
+    }
+    return true;
+  });
+
+  const [subscriberUsernameShadow, setSubscriberUsernameShadow] = useState(
+    () => {
+      if (window.electron.store.get('subscriberUsernameShadow')) {
+        return window.electron.store.get('subscriberUsernameShadow');
+      }
+      return true;
+    }
+  );
+
+  const [vipUsernameShadow, setVipUsernameShadow] = useState(() => {
+    if (window.electron.store.get('vipUsernameShadow')) {
+      return window.electron.store.get('vipUsernameShadow');
+    }
+    return true;
+  });
+
+  const [modUsernameShadow, setModUsernameShadow] = useState(() => {
+    if (window.electron.store.get('modUsernameShadow')) {
+      return window.electron.store.get('modUsernameShadow');
+    }
+    return true;
+  });
+
+  const [ftcUsernameShadow, setFtcUsernameShadow] = useState(() => {
+    if (window.electron.store.get('ftcUsernameShadow')) {
+      return window.electron.store.get('ftcUsernameShadow');
+    }
+    return true;
+  });
+
+  const [messageShadow, setMessageShadow] = useState(() => {
+    if (window.electron.store.get('messageShadow')) {
+      return window.electron.store.get('messageShadow');
+    }
+    return false;
+  });
+
   const [usernameFontSize, setUsernameFontSize] = useState(() => {
     if (window.electron.store.get('usernameFontSize')) {
       return window.electron.store.get('usernameFontSize');
+    }
+    return 32;
+  });
+
+  const [subscriberUsernameFontSize, setSubscriberUsernameFontSize] = useState(
+    () => {
+      if (window.electron.store.get('subscriberUsernameFontSize')) {
+        return window.electron.store.get('subscriberUsernameFontSize');
+      }
+      return 32;
+    }
+  );
+
+  const [emoteSize, setEmoteSize] = useState(() => {
+    if (window.electron.store.get('emoteSize')) {
+      return window.electron.store.get('emoteSize');
+    }
+    return 1;
+  });
+
+  const [vipUsernameFontSize, setVipUsernameFontSize] = useState(() => {
+    if (window.electron.store.get('vipUsernameFontSize')) {
+      return window.electron.store.get('vipUsernameFontSize');
+    }
+    return 32;
+  });
+
+  const [modUsernameFontSize, setModUsernameFontSize] = useState(() => {
+    if (window.electron.store.get('modUsernameFontSize')) {
+      return window.electron.store.get('modUsernameFontSize');
+    }
+    return 32;
+  });
+
+  const [ftcUsernameFontSize, setFtcUsernameFontSize] = useState(() => {
+    if (window.electron.store.get('ftcUsernameFontSize')) {
+      return window.electron.store.get('ftcUsernameFontSize');
     }
     return 32;
   });
@@ -142,11 +281,44 @@ const Chat = () => {
     window.electron.store.set('usernameFontSize', newValue);
   };
 
+  const onSubscriberUsernameSizeChange = (newValue: number) => {
+    setSubscriberUsernameFontSize(newValue);
+    window.electron.store.set('subscriberUsernameFontSize', newValue);
+  };
+
+  const onEmoteSizeChange = (newValue: number) => {
+    setEmoteSize(newValue);
+    window.electron.store.set('emoteSize', newValue);
+    window.location.reload();
+  };
+
+  const onVipUsernameSizeChange = (newValue: number) => {
+    setVipUsernameFontSize(newValue);
+    window.electron.store.set('vipUsernameFontSize', newValue);
+  };
+
+  const onModUsernameSizeChange = (newValue: number) => {
+    setModUsernameFontSize(newValue);
+    window.electron.store.set('modUsernameFontSize', newValue);
+  };
+
+  const onFtcUsernameSizeChange = (newValue: number) => {
+    setFtcUsernameFontSize(newValue);
+    window.electron.store.set('ftcUsernameFontSize', newValue);
+  };
+
   const [chatColor, setChatColor] = useState(() => {
     if (window.electron.store.get('chatColor')) {
       return window.electron.store.get('chatColor');
     }
     return { a: 1, b: 255, g: 255, r: 255 };
+  });
+
+  const [linksColor, setLinksColor] = useState(() => {
+    if (window.electron.store.get('chatColor')) {
+      return window.electron.store.get('chatColor');
+    }
+    return { a: 1, b: 1, g: 1, r: 255 };
   });
 
   const [moderatorChatBgColor, setModeratorChatBgColor] = useState(() => {
@@ -177,11 +349,32 @@ const Chat = () => {
     return { a: 0.4, b: 255, g: 0, r: 102 };
   });
 
-  const [subChatColor, setSubChatColor] = useState(() => {
-    if (window.electron.store.get('subChatColor')) {
-      return window.electron.store.get('subChatColor');
+  const [subUsernameColor, setSubUsernameColor] = useState(() => {
+    if (window.electron.store.get('subUsernameColor')) {
+      return window.electron.store.get('subUsernameColor');
     }
-    return { a: 1, b: 255, g: 0, r: 255 };
+    return { a: 0.4, b: 255, g: 0, r: 102 };
+  });
+
+  const [vipUsernameColor, setVipUsernameColor] = useState(() => {
+    if (window.electron.store.get('vipUsernameColor')) {
+      return window.electron.store.get('vipUsernameColor');
+    }
+    return { a: 0.4, b: 255, g: 0, r: 102 };
+  });
+
+  const [modUsernameColor, setModUsernameColor] = useState(() => {
+    if (window.electron.store.get('modUsernameColor')) {
+      return window.electron.store.get('modUsernameColor');
+    }
+    return { a: 0.4, b: 255, g: 0, r: 102 };
+  });
+
+  const [ftcUsernameColor, setFtcUsernameColor] = useState(() => {
+    if (window.electron.store.get('ftcUsernameColor')) {
+      return window.electron.store.get('ftcUsernameColor');
+    }
+    return { a: 0.4, b: 255, g: 0, r: 102 };
   });
 
   const [chatFontSize, setChatFontSize] = useState(() => {
@@ -190,6 +383,10 @@ const Chat = () => {
     }
     return 32;
   });
+
+  const style = document.createElement('style');
+  style.type = 'text/css';
+  style.innerHTML = `.cssClass { color: ${linksColor}; }`;
 
   const onChatSizeChange = (newValue: number) => {
     setChatFontSize(newValue);
@@ -208,9 +405,82 @@ const Chat = () => {
     setIsModalOpen(false);
   };
 
+  const onUsernameShadow = (e: CheckboxChangeEvent) => {
+    setUsernameShadow(e.target.checked);
+    window.electron.store.set('usernameShadow', e.target.checked);
+  };
+
+  const onSubscriberUsernameShadow = (e: CheckboxChangeEvent) => {
+    setSubscriberUsernameShadow(e.target.checked);
+    window.electron.store.set('subscriberUsernameShadow', e.target.checked);
+  };
+
+  const onVipUsernameShadow = (e: CheckboxChangeEvent) => {
+    setVipUsernameShadow(e.target.checked);
+    window.electron.store.set('vipUsernameShadow', e.target.checked);
+  };
+
+  const onModUsernameShadow = (e: CheckboxChangeEvent) => {
+    setModUsernameShadow(e.target.checked);
+    window.electron.store.set('modUsernameShadow', e.target.checked);
+  };
+
+  const onFtcUsernameShadow = (e: CheckboxChangeEvent) => {
+    setFtcUsernameShadow(e.target.checked);
+    window.electron.store.set('ftcUsernameShadow', e.target.checked);
+  };
+
+  const onMessageShadow = (e: CheckboxChangeEvent) => {
+    setMessageShadow(e.target.checked);
+    window.electron.store.set('messageShadow', e.target.checked);
+  };
+
   const onPreserveTwitchColorChange = (e: CheckboxChangeEvent) => {
     setPreserveTwitchColorChange(e.target.checked);
     window.electron.store.set('preserveTwitchColorChange', e.target.checked);
+  };
+
+  const onSubOverride = (e: CheckboxChangeEvent) => {
+    setSubOverride(e.target.checked);
+    window.electron.store.set('subOverride', e.target.checked);
+  };
+
+  const onVipOverride = (e: CheckboxChangeEvent) => {
+    setVipOverride(e.target.checked);
+    window.electron.store.set('vipOverride', e.target.checked);
+  };
+
+  const onModOverride = (e: CheckboxChangeEvent) => {
+    setModOverride(e.target.checked);
+    window.electron.store.set('modOverride', e.target.checked);
+  };
+
+  const onFtcOverride = (e: CheckboxChangeEvent) => {
+    setFtcOverride(e.target.checked);
+    window.electron.store.set('ftcOverride', e.target.checked);
+  };
+
+  const onSubscriberPreserveTwitchColorChange = (e: CheckboxChangeEvent) => {
+    setSubscriberPreserveTwitchColorChange(e.target.checked);
+    window.electron.store.set(
+      'subscriberPreserveTwitchColorChange',
+      e.target.checked
+    );
+  };
+
+  const onVipPreserveTwitchColorChange = (e: CheckboxChangeEvent) => {
+    setVipPreserveTwitchColorChange(e.target.checked);
+    window.electron.store.set('vipPreserveTwitchColorChange', e.target.checked);
+  };
+
+  const onModPreserveTwitchColorChange = (e: CheckboxChangeEvent) => {
+    setModPreserveTwitchColorChange(e.target.checked);
+    window.electron.store.set('modPreserveTwitchColorChange', e.target.checked);
+  };
+
+  const onFtcPreserveTwitchColorChange = (e: CheckboxChangeEvent) => {
+    setFtcPreserveTwitchColorChange(e.target.checked);
+    window.electron.store.set('ftcPreserveTwitchColorChange', e.target.checked);
   };
 
   const onFilterCommonBotsEnabled = (e: CheckboxChangeEvent) => {
@@ -263,7 +533,7 @@ const Chat = () => {
         marginTop: '-1px',
         borderRadius: '20px',
       };
-    if (chatter?.badges?.subscriber)
+    if (chatter?.subscriber)
       return {
         backgroundColor: `rgba(${subChatBgColor.r},${subChatBgColor.g},${subChatBgColor.b},${subChatBgColor.a})`,
         borderTop: `1px solid rgba(${subChatBgColor.r},${subChatBgColor.g},${subChatBgColor.b},${subChatBgColor.a})`,
@@ -273,22 +543,83 @@ const Chat = () => {
       };
   };
 
+  const usernameColorByType = (chatter: any): any => {
+    if (chatter?.firstMessage && ftcOverride) {
+      if (ftcPreserveTwitchColorChange) {
+        return chatter.color;
+      }
+      return `rgba(${ftcUsernameColor.r},${ftcUsernameColor.g},${ftcUsernameColor.b},${ftcUsernameColor.a})`;
+    }
+    if (chatter?.badges?.vip && vipOverride) {
+      if (vipPreserveTwitchColorChange) {
+        return chatter.color;
+      }
+      return `rgba(${vipUsernameColor.r},${vipUsernameColor.g},${vipUsernameColor.b},${vipUsernameColor.a})`;
+    }
+    if (chatter?.badges?.moderator && modOverride) {
+      if (modPreserveTwitchColorChange) {
+        return chatter.color;
+      }
+      return `rgba(${modUsernameColor.r},${modUsernameColor.g},${modUsernameColor.b},${modUsernameColor.a})`;
+    }
+    if (chatter?.subscriber && subOverride) {
+      if (subscriberPreserveTwitchColorChange) {
+        return chatter.color;
+      }
+      return `rgba(${subUsernameColor.r},${subUsernameColor.g},${subUsernameColor.b},${subUsernameColor.a})`;
+    }
+    if (preserveTwitchColorChange) {
+      return chatter.color;
+    }
+    return `rgba(${usernameColor.r},${usernameColor.g},${usernameColor.b},${usernameColor.a})`;
+  };
+
+  const usernameShadowByType = (chatter: any): any => {
+    if (chatter?.firstMessage && ftcOverride) {
+      return ftcUsernameShadow ? '2px 2px black' : '';
+    }
+    if (chatter?.badges?.vip && vipOverride) {
+      return vipUsernameShadow ? '2px 2px black' : '';
+    }
+    if (chatter?.badges?.moderator && modOverride) {
+      return modUsernameShadow ? '2px 2px black' : '';
+    }
+    if (chatter?.subscriber && subOverride) {
+      return subscriberUsernameShadow ? '2px 2px black' : '';
+    }
+    return usernameShadow ? '2px 2px black' : '';
+  };
+
+  const usernameFontSizeType = (chatter: any): any => {
+    if (chatter?.firstMessage && ftcOverride) {
+      return ftcUsernameFontSize;
+    }
+    if (chatter?.badges?.vip && vipOverride) {
+      return vipUsernameFontSize;
+    }
+    if (chatter?.badges?.moderator && subOverride) {
+      return modUsernameFontSize;
+    }
+    if (chatter?.subscriber && subOverride) {
+      return subscriberUsernameFontSize;
+    }
+    return usernameFontSize;
+  };
+
   const scrollToBottom = () => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
-      behavior: 'auto',
+      behavior: 'smooth',
     });
   };
 
   const client = new tmi.Client({ channels: [username || ''] });
 
   client.on('message', (_, tags, message) => {
-    const author: string = tags['display-name'] || '';
-
     const options: EmoteOptions = {
       format: 'default',
       themeMode: 'light',
-      scale: '2.0',
+      scale: `${emoteSize}.0`,
     };
 
     const msg: Message = {
@@ -399,12 +730,14 @@ const Chat = () => {
               >
                 <h3>Twitch Username</h3>
                 <Input
+                  value={username}
                   className="usernameInput"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setUsername(e.target.value);
                     window.electron.store.set('username', e.target.value);
                   }}
                 />
+                <Button onClick={() => window.location.reload()}>✅</Button>
               </Panel>
               <Panel header={<h1>Background</h1>} key={2} style={panelStyle}>
                 <h3>Background Color</h3>
@@ -420,33 +753,229 @@ const Chat = () => {
                 </div>
               </Panel>
               <Panel header={<h1>Usernames</h1>} key={3} style={panelStyle}>
-                <h2>ALL</h2>
-                <h3>Username Color</h3>
-                <SketchPicker
-                  color={usernameColor}
-                  onChange={(color) => {
-                    setUsernameColor(color.rgb);
-                    window.electron.store.set('usernameColor', color.rgb);
-                  }}
-                  className="colorPicker"
-                />
-                <br />
-                <Checkbox
-                  checked={preserveTwitchColorChange}
-                  onChange={onPreserveTwitchColorChange}
-                >
-                  <h3>Preserve Twitch Colors</h3>
-                </Checkbox>
-                <h3>Username Size</h3>
-                <Slider
-                  min={16}
-                  max={48}
-                  onChange={onUsernameSizeChange}
-                  value={
-                    typeof usernameFontSize === 'number' ? usernameFontSize : 0
-                  }
-                />
-                <hr className="solid" />
+                <Collapse bordered={false}>
+                  <Panel header="All" key={1} style={panelStyle}>
+                    <h3>Username Color</h3>
+                    <SketchPicker
+                      color={usernameColor}
+                      onChange={(color) => {
+                        setUsernameColor(color.rgb);
+                        window.electron.store.set('usernameColor', color.rgb);
+                      }}
+                      className="colorPicker"
+                    />
+                    <br />
+                    <Checkbox
+                      checked={preserveTwitchColorChange}
+                      onChange={onPreserveTwitchColorChange}
+                    >
+                      <h3>Preserve Twitch Colors</h3>
+                    </Checkbox>
+                    <br />
+                    <Checkbox
+                      checked={usernameShadow}
+                      onChange={onUsernameShadow}
+                    >
+                      <h3>Username Shadow</h3>
+                    </Checkbox>
+                    <h3>Username Size</h3>
+                    <Slider
+                      min={16}
+                      max={48}
+                      onChange={onUsernameSizeChange}
+                      value={
+                        typeof usernameFontSize === 'number'
+                          ? usernameFontSize
+                          : 0
+                      }
+                    />
+                    <hr className="solid" />
+                  </Panel>
+                </Collapse>
+                <Collapse bordered={false}>
+                  <Panel header="Subscribers" key={1} style={panelStyle}>
+                    <Checkbox checked={subOverride} onChange={onSubOverride}>
+                      <h3>Subscriber Settings</h3>
+                    </Checkbox>
+                    <br />
+                    <h3>Username Color</h3>
+                    <SketchPicker
+                      color={subUsernameColor}
+                      onChange={(color) => {
+                        setSubUsernameColor(color.rgb);
+                        window.electron.store.set(
+                          'subUsernameColor',
+                          color.rgb
+                        );
+                      }}
+                      className="colorPicker"
+                    />
+                    <br />
+                    <Checkbox
+                      checked={subscriberPreserveTwitchColorChange}
+                      onChange={onSubscriberPreserveTwitchColorChange}
+                    >
+                      <h3>Preserve Twitch Colors</h3>
+                    </Checkbox>
+                    <br />
+                    <Checkbox
+                      checked={subscriberUsernameShadow}
+                      onChange={onSubscriberUsernameShadow}
+                    >
+                      <h3>Username Shadow</h3>
+                    </Checkbox>
+                    <h3>Username Size</h3>
+                    <Slider
+                      min={16}
+                      max={48}
+                      onChange={onSubscriberUsernameSizeChange}
+                      value={
+                        typeof subscriberUsernameFontSize === 'number'
+                          ? subscriberUsernameFontSize
+                          : 0
+                      }
+                    />
+                    <hr className="solid" />
+                  </Panel>
+                </Collapse>
+                <Collapse bordered={false}>
+                  <Panel header="VIPs" key={1} style={panelStyle}>
+                    <Checkbox checked={vipOverride} onChange={onVipOverride}>
+                      <h3>VIP Settings</h3>
+                    </Checkbox>
+                    <br />
+                    <h3>Username Color</h3>
+                    <SketchPicker
+                      color={vipUsernameColor}
+                      onChange={(color) => {
+                        setVipUsernameColor(color.rgb);
+                        window.electron.store.set(
+                          'vipUsernameColor',
+                          color.rgb
+                        );
+                      }}
+                      className="colorPicker"
+                    />
+                    <br />
+                    <Checkbox
+                      checked={vipPreserveTwitchColorChange}
+                      onChange={onVipPreserveTwitchColorChange}
+                    >
+                      <h3>Preserve Twitch Colors</h3>
+                    </Checkbox>
+                    <br />
+                    <Checkbox
+                      checked={vipUsernameShadow}
+                      onChange={onVipUsernameShadow}
+                    >
+                      <h3>Username Shadow</h3>
+                    </Checkbox>
+                    <h3>Username Size</h3>
+                    <Slider
+                      min={16}
+                      max={48}
+                      onChange={onVipUsernameSizeChange}
+                      value={
+                        typeof vipUsernameFontSize === 'number'
+                          ? vipUsernameFontSize
+                          : 0
+                      }
+                    />
+                    <hr className="solid" />
+                  </Panel>
+                </Collapse>
+                <Collapse bordered={false}>
+                  <Panel header="Mods" key={1} style={panelStyle}>
+                    <Checkbox checked={modOverride} onChange={onModOverride}>
+                      <h3>Mod Settings</h3>
+                    </Checkbox>
+                    <br />
+                    <h3>Username Color</h3>
+                    <SketchPicker
+                      color={modUsernameColor}
+                      onChange={(color) => {
+                        setModUsernameColor(color.rgb);
+                        window.electron.store.set(
+                          'modUsernameColor',
+                          color.rgb
+                        );
+                      }}
+                      className="colorPicker"
+                    />
+                    <br />
+                    <Checkbox
+                      checked={modPreserveTwitchColorChange}
+                      onChange={onModPreserveTwitchColorChange}
+                    >
+                      <h3>Preserve Twitch Colors</h3>
+                    </Checkbox>
+                    <br />
+                    <Checkbox
+                      checked={modUsernameShadow}
+                      onChange={onModUsernameShadow}
+                    >
+                      <h3>Username Shadow</h3>
+                    </Checkbox>
+                    <h3>Username Size</h3>
+                    <Slider
+                      min={16}
+                      max={48}
+                      onChange={onModUsernameSizeChange}
+                      value={
+                        typeof modUsernameFontSize === 'number'
+                          ? modUsernameFontSize
+                          : 0
+                      }
+                    />
+                    <hr className="solid" />
+                  </Panel>
+                </Collapse>
+                <Collapse bordered={false}>
+                  <Panel header="First Chat" key={1} style={panelStyle}>
+                    <Checkbox checked={ftcOverride} onChange={onFtcOverride}>
+                      <h3>First Chat Settings</h3>
+                    </Checkbox>
+                    <br />
+                    <h3>Username Color</h3>
+                    <SketchPicker
+                      color={ftcUsernameColor}
+                      onChange={(color) => {
+                        setFtcUsernameColor(color.rgb);
+                        window.electron.store.set(
+                          'ftcUsernameColor',
+                          color.rgb
+                        );
+                      }}
+                      className="colorPicker"
+                    />
+                    <br />
+                    <Checkbox
+                      checked={ftcPreserveTwitchColorChange}
+                      onChange={onFtcPreserveTwitchColorChange}
+                    >
+                      <h3>Preserve Twitch Colors</h3>
+                    </Checkbox>
+                    <br />
+                    <Checkbox
+                      checked={ftcUsernameShadow}
+                      onChange={onFtcUsernameShadow}
+                    >
+                      <h3>Username Shadow</h3>
+                    </Checkbox>
+                    <h3>Username Size</h3>
+                    <Slider
+                      min={16}
+                      max={48}
+                      onChange={onFtcUsernameSizeChange}
+                      value={
+                        typeof ftcUsernameFontSize === 'number'
+                          ? ftcUsernameFontSize
+                          : 0
+                      }
+                    />
+                    <hr className="solid" />
+                  </Panel>
+                </Collapse>
               </Panel>
               <Panel header={<h1>Messages</h1>} key={4} style={panelStyle}>
                 <Checkbox
@@ -457,6 +986,10 @@ const Chat = () => {
                   }}
                 >
                   <h3>Message Animation</h3>
+                </Checkbox>
+                <br />
+                <Checkbox checked={messageShadow} onChange={onMessageShadow}>
+                  <h3>Message Shadow</h3>
                 </Checkbox>
                 <h3>Chat Message Color</h3>
                 <SketchPicker
@@ -475,6 +1008,20 @@ const Chat = () => {
                   onChange={onChatSizeChange}
                   value={typeof chatFontSize === 'number' ? chatFontSize : 0}
                 />
+                <br />
+                <h3>Emote Size</h3>
+                <Slider
+                  min={1}
+                  max={3}
+                  marks={{
+                    1: '12px',
+                    2: '24px',
+                    3: '48px',
+                  }}
+                  onChange={onEmoteSizeChange}
+                  value={typeof emoteSize === 'number' ? emoteSize : 0}
+                />
+                <br />
                 <Collapse bordered={false}>
                   <Panel header="Message Background" key={1} style={panelStyle}>
                     <h3>Moderator Chat Message Background Color</h3>
@@ -551,7 +1098,7 @@ const Chat = () => {
                     </Checkbox>
                   </Panel>
                 </Collapse>
-                <Collapse bordered={false}>
+                {/* <Collapse bordered={false}>
                   <Panel header="Message Filters" key={1} style={panelStyle}>
                     <Checkbox
                       checked={filterEmotesEnabled}
@@ -566,7 +1113,7 @@ const Chat = () => {
                       <h3>Filter !commands</h3>
                     </Checkbox>
                   </Panel>
-                </Collapse>
+                </Collapse> */}
               </Panel>
             </Collapse>
           </div>
@@ -580,64 +1127,70 @@ const Chat = () => {
             minHeight: '100%',
           }}
         >
-          <div id="scroller">
-            {messages.map((msg) => {
-              if (
-                msg.username &&
-                !filterCommonBots(msg.username, filterCommonBotsEnabled) &&
-                msg.message &&
-                !filterNonSubs(msg, filterNonSubsEnabled) &&
-                !filterNonVips(msg, filterNonVipsEnabled) &&
-                !filterNonMods(msg, filterNonModsEnabled)
-              ) {
-                msg.message = filterEmotes(msg, filterEmotesEnabled);
-                return (
-                  <>
-                    <section
-                      className="message"
-                      style={{
-                        ...chatterTypeStyle(msg),
-                        animation: animatonOn ? 'fadeIn 0.4s' : '',
-                        display:
-                          msg.username.length +
-                            msg.message.replaceAll(/(<([^>]+)>)/gi, '-')
-                              .length >
-                          28
-                            ? 'block'
-                            : 'flex',
-                      }}
-                    >
-                      <h3
+          {!username ? (
+            <>
+              <div className="splash">
+                <img className="logoSplash" width="900" alt="icon" src={icon} />
+                <h1>Start by setting a username!</h1>
+              </div>
+              <div className="arrow">
+                <AiFillCaretDown size={40} />
+              </div>
+            </>
+          ) : (
+            <div id="scroller">
+              {messages.map((msg) => {
+                if (
+                  msg.username &&
+                  !filterCommonBots(msg.username, filterCommonBotsEnabled) &&
+                  msg.message &&
+                  !filterNonSubs(msg, filterNonSubsEnabled) &&
+                  !filterNonVips(msg, filterNonVipsEnabled) &&
+                  !filterNonMods(msg, filterNonModsEnabled)
+                ) {
+                  msg.message = filterEmotes(msg, filterEmotesEnabled);
+                  return (
+                    <>
+                      <section
+                        className="message"
                         style={{
-                          color: `${
-                            preserveTwitchColorChange
-                              ? msg.color
-                              : `rgba(${usernameColor.r},${usernameColor.g},${usernameColor.b},${usernameColor.a})`
-                          }`,
-                          fontSize: usernameFontSize,
-                          overflowWrap: 'break-word',
-                          fontWeight: 'bold',
+                          ...chatterTypeStyle(msg),
+                          animation: animatonOn ? 'fadeIn 0.4s' : '',
+                          display: 'block',
                         }}
                       >
-                        {msg.username}
-                      </h3>{' '}
-                      <p
-                        style={{
-                          color: `rgba(${chatColor.r},${chatColor.g},${chatColor.b},${chatColor.a})`,
-                          fontSize: chatFontSize,
-                        }}
-                        dangerouslySetInnerHTML={{
-                          __html: Autolinker.link(msg.message),
-                        }}
-                      />
-                    </section>
-                    {/* <br /> */}
-                  </>
-                );
-              }
-            })}
-            {/* <div id="anchor" /> */}
-          </div>
+                        <h3
+                          style={{
+                            color: usernameColorByType(msg),
+                            fontSize: usernameFontSizeType(msg),
+                            overflowWrap: 'break-word',
+                            fontWeight: 'bold',
+                            textShadow: usernameShadowByType(msg),
+                          }}
+                        >
+                          {msg.username}
+                        </h3>{' '}
+                        <p
+                          style={{
+                            color: `rgba(${chatColor.r},${chatColor.g},${chatColor.b},${chatColor.a})`,
+                            fontSize: chatFontSize,
+                            textShadow: messageShadow ? '2px 2px black' : '',
+                          }}
+                          dangerouslySetInnerHTML={{
+                            __html: Autolinker.link(msg.message, {
+                              className: 'apple',
+                            }),
+                          }}
+                        />
+                      </section>
+                      <br />
+                    </>
+                  );
+                }
+              })}
+              {/* <div id="anchor" /> */}
+            </div>
+          )}
           <div className="controls">
             <MdSettingsApplications
               size={30}
