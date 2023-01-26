@@ -10,9 +10,7 @@
 
 <div align="center">
 
-[![Build Status][github-actions-status]][github-actions-url]
-[![Github Tag][github-tag-image]][github-tag-url]
-[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/)
+[![Build Status][github-actions-status]][github-actions-url])
 
 </div>
 
@@ -51,10 +49,6 @@ See our [docs and guides here](https://electron-react-boilerplate.js.org/docs/in
 ## Community
 
 Join our Discord: https://discord.gg/
-
-## License
-
-MIT © [Electron React Boilerplate](https://github.com/electron-react-boilerplate)
 
 [github-actions-status]: https://github.com/electron-react-boilerplate/electron-react-boilerplate/workflows/Test/badge.svg
 [github-actions-url]: https://github.com/electron-react-boilerplate/electron-react-boilerplate/actions

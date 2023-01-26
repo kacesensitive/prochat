@@ -75,6 +75,25 @@ body::-webkit-scrollbar {
   -webkit-app-region: no-drag;
 }
 
+.settingsValidate {
+  padding: 15px;
+  min-height: 10pc !important;
+  overflow: auto;
+  display: block;
+  background-color: white;
+  min-width: 250px;
+  margin: 0 auto;
+  text-align: center;
+  border-top: 10px solid #0496ff;
+  border-bottom: 10px solid #00e5ff;
+  background-image: linear-gradient(#0496ff, #00e5ff),
+    linear-gradient(#0496ff, #00e5ff);
+  background-size: 10px 100%;
+  background-position: 0 0, 100% 0;
+  background-repeat: no-repeat;
+  -webkit-app-region: no-drag;
+}
+
 .settings::-webkit-scrollbar {
   display: none;
 }
@@ -201,6 +220,10 @@ html {
   }
 }
 
+.licenseInput {
+  text-align: center;
+}
+
 .message {
   display: flex;
   gap: 16px;
@@ -223,7 +246,7 @@ html {
   text-align: center;
   width: 100%;
   justify-content: center;
-  font-size: 29px;
+  font-size: 15px;
   background: -webkit-linear-gradient(rgb(0, 149, 255), rgb(0, 202, 252));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -231,6 +254,18 @@ html {
 
 .logoSplash {
   max-width: 500px;
+}
+
+.splashInfo {
+  text-align: center;
+  justify-content: center;
+  font-size: 15px;
+  background: -webkit-linear-gradient(rgb(0, 0, 0), rgb(69, 69, 69));
+  border-radius: 20px;
+}
+
+.logoSplashInfo {
+  max-width: 400px;
 }
 
 .arrow {
@@ -280,6 +315,9 @@ html {
   border-bottom: 1px solid #00ad03;
   margin-top: -1px;
   border-radius: 20px;
+}
+
+.validateButton {
 }
 
 .twitch-emote-1 {

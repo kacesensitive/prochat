@@ -27,6 +27,9 @@ const electronHandler = {
     set(key: string, val: unknown) {
       ipcRenderer.send('electron-store-set', key, val);
     },
+    bet() {
+      ipcRenderer.send('electron-store-bet');
+    },
   },
 };
 

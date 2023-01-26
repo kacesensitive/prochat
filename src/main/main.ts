@@ -3,10 +3,10 @@ import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import Store from 'electron-store';
+import windowStateKeeper from 'electron-window-state';
+import { machineIdSync } from 'node-machine-id';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-
-import windowStateKeeper from 'electron-window-state';
 
 const store = new Store();
 
@@ -25,6 +25,10 @@ ipcMain.on('electron-store-get', (event, key) => {
 });
 ipcMain.on('electron-store-set', async (event, key, val) => {
   event.returnValue = store.set(key, val);
+});
+
+ipcMain.on('electron-store-bet', async (event) => {
+  event.returnValue = store.set('machineID', machineIdSync());
 });
 
 ipcMain.on('ipc-example', async (event, arg) => {

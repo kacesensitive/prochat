@@ -1,3 +1,6 @@
+/* eslint-disable consistent-return */
+/* eslint-disable array-callback-return */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useEffect, useState } from 'react';
 import {
   MemoryRouter as Router,
@@ -13,8 +16,10 @@ import {
   Checkbox,
   Collapse,
   Input,
+  message,
   Modal,
   Slider,
+  Space,
   Tooltip,
 } from 'antd';
 import tmi from 'tmi.js';
@@ -30,7 +35,13 @@ import {
   IoMdInformationCircleOutline,
 } from 'react-icons/io';
 import { MdSettingsApplications, MdPowerSettingsNew } from 'react-icons/md';
-import { AiFillCaretDown, AiFillCheckCircle } from 'react-icons/ai';
+import { FaKey } from 'react-icons/fa';
+import { CiUnlock, CiLock } from 'react-icons/ci';
+import {
+  AiFillCaretDown,
+  AiFillCheckCircle,
+  AiOutlineQuestionCircle,
+} from 'react-icons/ai';
 import Autolinker from 'autolinker';
 import {
   filterCommonBots,
@@ -39,7 +50,9 @@ import {
   filterNonSubs,
   filterNonVips,
 } from 'main/filters';
-import icon from '../../assets/icon.png';
+import logo from '../../assets/logo.png';
+
+const fetch = require('node-fetch');
 
 const { Panel } = Collapse;
 
@@ -50,7 +63,18 @@ const panelStyle = {
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
 
+  const [isValidated, setIsValidated] = useState(() => {
+    if (window.electron.store.get('isValidated')) {
+      return window.electron.store.get('isValidated');
+    }
+    return false;
+  });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isValidateModalOpen, setIsValidateModalOpen] = useState(false);
+
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   const [animatonOn, setIsAnimationOn] = useState(() => {
     if (window.electron.store.get('animatonOn')) {
@@ -62,6 +86,13 @@ const Chat = () => {
   const [username, setUsername] = useState(() => {
     if (window.electron.store.get('username')) {
       return window.electron.store.get('username');
+    }
+    return '';
+  });
+
+  const [licenseKey, setLicenseKey] = useState(() => {
+    if (window.electron.store.get('licenseKey')) {
+      return window.electron.store.get('licenseKey');
     }
     return '';
   });
@@ -281,6 +312,11 @@ const Chat = () => {
     window.electron.store.set('usernameFontSize', newValue);
   };
 
+  const onSetValidated = (newValue: boolean) => {
+    setIsValidated(newValue);
+    window.electron.store.set('isValidated', newValue);
+  };
+
   const onSubscriberUsernameSizeChange = (newValue: number) => {
     setSubscriberUsernameFontSize(newValue);
     window.electron.store.set('subscriberUsernameFontSize', newValue);
@@ -306,6 +342,8 @@ const Chat = () => {
     setFtcUsernameFontSize(newValue);
     window.electron.store.set('ftcUsernameFontSize', newValue);
   };
+
+  const [validating, setValidating] = useState<boolean>();
 
   const [chatColor, setChatColor] = useState(() => {
     if (window.electron.store.get('chatColor')) {
@@ -384,6 +422,69 @@ const Chat = () => {
     return 32;
   });
 
+  const [messageApi, contextHolder] = message.useMessage();
+
+  async function validateLicenseKey(key: string) {
+    window.electron.store.bet();
+    const id = window.electron.store.get('machineID');
+    console.log(id);
+    const validation = await fetch(
+      'https://api.keygen.sh/v1/accounts/kacey-dev/licenses/actions/validate-key',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+          Accept: 'application/vnd.api+json',
+        },
+        body: JSON.stringify({
+          meta: {
+            key,
+            scope: {
+              fingerprint: id,
+            },
+          },
+        }),
+      }
+    );
+    const { meta, errors } = await validation.json();
+    if (errors) {
+      messageApi.error({
+        type: 'error',
+        content: `Error: ${errors[0].title} ${errors[0].detail}`,
+      });
+      console.log(JSON.stringify(errors));
+      throw errors;
+    }
+    if (!meta.valid) {
+      messageApi.error({
+        type: 'error',
+        content: `Error: ${meta.code} ${meta.detail}`,
+      });
+      console.log(meta);
+      throw errors;
+    }
+    return meta.code;
+  }
+
+  const enterValidating = (key: string) => {
+    setValidating(true);
+    validateLicenseKey(key.trim())
+      .then((res) => {
+        setValidating(false);
+        messageApi.success({
+          type: 'success',
+          content: 'Succcess: ENJOY!!',
+        });
+        onSetValidated(true);
+        return '';
+      })
+      .catch((e) => {
+        setValidating(false);
+        onSetValidated(false);
+        console.log(e);
+      });
+  };
+
   const style = document.createElement('style');
   style.type = 'text/css';
   style.innerHTML = `.cssClass { color: ${linksColor}; }`;
@@ -403,6 +504,30 @@ const Chat = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const showValidateModal = () => {
+    setIsValidateModalOpen(true);
+  };
+
+  const handleVOk = () => {
+    setIsValidateModalOpen(false);
+  };
+
+  const handleVCancel = () => {
+    setIsValidateModalOpen(false);
+  };
+
+  const showInfoModal = () => {
+    setIsInfoModalOpen(true);
+  };
+
+  const handleInfoOk = () => {
+    setIsInfoModalOpen(false);
+  };
+
+  const handleInfoCancel = () => {
+    setIsInfoModalOpen(false);
   };
 
   const onUsernameShadow = (e: CheckboxChangeEvent) => {
@@ -508,6 +633,7 @@ const Chat = () => {
     window.electron.store.set('filterEmotesEnabled', e.target.checked);
   };
 
+  // eslint-disable-next-line consistent-return
   const chatterTypeStyle = (chatter: any): any => {
     if (chatter?.badges?.moderator)
       return {
@@ -612,13 +738,18 @@ const Chat = () => {
       behavior: 'smooth',
     });
   };
+  setTimeout(function () {
+    scrollToBottom();
+  }, 200);
 
   const client = new tmi.Client({ channels: [username || ''] });
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   client.on('message', (_, tags, message) => {
     const options: EmoteOptions = {
       format: 'default',
       themeMode: 'light',
+      // @ts-ignore
       scale: `${emoteSize}.0`,
     };
 
@@ -675,6 +806,7 @@ const Chat = () => {
     }
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   client.on('ban', (_channel, username) => {
     setMessages((msgs) => {
       const allMsgs = [...msgs];
@@ -684,6 +816,7 @@ const Chat = () => {
     });
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   client.on('timeout', (_channel, username) => {
     setMessages((msgs) => {
       const allMsgs = [...msgs];
@@ -697,9 +830,83 @@ const Chat = () => {
 
   useEffect(() => {
     client.connect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div>
+      {contextHolder}
+      <Modal
+        open={isInfoModalOpen}
+        onOk={handleInfoOk}
+        onCancel={handleInfoCancel}
+        // mask={true}
+        closable={false}
+        style={{
+          minWidth: '342px',
+        }}
+      >
+        <div>
+          <div className="splashInfo">
+            <img className="logoSplashInfo" alt="icon" src={logo} />
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        open={isValidateModalOpen}
+        onOk={handleVOk}
+        onCancel={handleVCancel}
+        mask={false}
+        closable={false}
+        style={{
+          minWidth: '342px',
+        }}
+      >
+        <div>
+          <div className="settingsValidate">
+            <h2>License Key 🔑</h2>
+            <br />
+            <Input
+              value={licenseKey}
+              className="licenseInput"
+              placeholder="XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX-V3"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setLicenseKey(e.target.value);
+                window.electron.store.set('licenseKey', e.target.value);
+              }}
+            />
+            <div style={{ minHeight: '10px' }} />
+            <Space>
+              {isValidated ? (
+                <Button
+                  type="primary"
+                  icon={<FaKey />}
+                  className="validateButton"
+                  disabled
+                >
+                  &nbsp; Validated
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  icon={<FaKey />}
+                  loading={validating}
+                  onClick={() => enterValidating(licenseKey)}
+                  className="validateButton"
+                >
+                  &nbsp; Validate!
+                </Button>
+              )}
+              <Button
+                type="primary"
+                icon={<AiOutlineQuestionCircle size={20} />}
+                onClick={() => {
+                  setIsValidated(false);
+                }}
+              />
+            </Space>
+          </div>
+        </div>
+      </Modal>
       <Modal
         open={isModalOpen}
         onOk={handleOk}
@@ -1130,8 +1337,8 @@ const Chat = () => {
           {!username ? (
             <>
               <div className="splash">
-                <img className="logoSplash" width="900" alt="icon" src={icon} />
-                <h1>Start by setting a username!</h1>
+                <img className="logoSplash" width="700" alt="icon" src={logo} />
+                <h1>Start by setting the username of the stream!</h1>
               </div>
               <div className="arrow">
                 <AiFillCaretDown size={40} />
@@ -1210,8 +1417,29 @@ const Chat = () => {
                 float: 'right',
               }}
               size={30}
-              onClick={() => window.close()}
+              onClick={() => showInfoModal()}
             />
+            {!isValidated ? (
+              <CiLock
+                style={{
+                  float: 'right',
+                }}
+                size={30}
+                onClick={() => {
+                  showValidateModal();
+                }}
+              />
+            ) : (
+              <CiUnlock
+                style={{
+                  float: 'right',
+                }}
+                size={30}
+                onClick={() => {
+                  showValidateModal();
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
