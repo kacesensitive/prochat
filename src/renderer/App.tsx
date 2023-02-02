@@ -2,17 +2,9 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useEffect, useState } from 'react';
-import {
-  MemoryRouter as Router,
-  Routes,
-  Route,
-  useSearchParams,
-  Link,
-  useNavigate,
-} from 'react-router-dom';
+import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import {
   Button,
-  Card,
   Checkbox,
   Collapse,
   Input,
@@ -20,7 +12,6 @@ import {
   Modal,
   Slider,
   Space,
-  Tooltip,
 } from 'antd';
 import tmi from 'tmi.js';
 import './App.css';
@@ -29,21 +20,13 @@ import { EmoteOptions, parse } from 'simple-tmi-emotes';
 import { SketchPicker } from 'react-color';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import ReactGPicker from 'react-gcolor-picker';
-import {
-  IoIosArrowDropdown,
-  IoMdArrowDropdownCircle,
-  IoMdInformationCircleOutline,
-} from 'react-icons/io';
+import { IoIosArrowDropdown } from 'react-icons/io';
 import { MdSettingsApplications, MdPowerSettingsNew } from 'react-icons/md';
 import { FaKey } from 'react-icons/fa';
-import { CiUnlock, CiLock } from 'react-icons/ci';
-import {
-  AiFillCaretDown,
-  AiFillCheckCircle,
-  AiOutlineQuestionCircle,
-} from 'react-icons/ai';
+import { AiFillCaretDown, AiOutlineQuestionCircle } from 'react-icons/ai';
 import Autolinker from 'autolinker';
 import {
+  filterCommands,
   filterCommonBots,
   filterEmotes,
   filterNonMods,
@@ -97,7 +80,14 @@ const Chat = () => {
     return '';
   });
 
-  const [messageLimit, setMessageLimit] = useState<string>('10');
+  const [activationToken, setActivationToken] = useState(() => {
+    if (window.electron.store.get('activationToken')) {
+      return window.electron.store.get('activationToken');
+    }
+    return '';
+  });
+
+  const [messageLimit, setMessageLimit] = useState<string>('100');
 
   const [preserveTwitchColorChange, setPreserveTwitchColorChange] = useState(
     () => {
@@ -191,6 +181,13 @@ const Chat = () => {
     return false;
   });
 
+  const [filterCommandsEnabled, setFilterCommandsEnabled] = useState(() => {
+    if (window.electron.store.get('filterCommandsEnabled')) {
+      return window.electron.store.get('filterCommandsEnabled');
+    }
+    return false;
+  });
+
   const [filterNonSubsEnabled, setFilterNonSubsEnabled] = useState(() => {
     if (window.electron.store.get('filterNonSubsEnabled')) {
       return window.electron.store.get('filterNonSubsEnabled');
@@ -209,7 +206,7 @@ const Chat = () => {
     if (window.electron.store.get('bgColor')) {
       return window.electron.store.get('bgColor');
     }
-    return 'linear-gradient(270deg, rgba(0, 198, 251, 0.51) 0.00%,rgba(0, 91, 234, 0.54) 100.00%)';
+    return 'linear-gradient(45deg, rgb(0, 0, 0) 0.00%,rgb(145, 145, 145) 100.00%)';
   });
 
   const [usernameColor, setUsernameColor] = useState(() => {
@@ -422,66 +419,143 @@ const Chat = () => {
     return 32;
   });
 
+  const [chatBlockSize, setChatBlockSize] = useState(() => {
+    if (window.electron.store.get('chatBlockSize')) {
+      return window.electron.store.get('chatBlockSize');
+    }
+    return 0;
+  });
+
   const [messageApi, contextHolder] = message.useMessage();
 
-  async function validateLicenseKey(key: string) {
-    window.electron.store.bet();
-    const id = window.electron.store.get('machineID');
-    console.log(id);
-    const validation = await fetch(
-      'https://api.keygen.sh/v1/accounts/kacey-dev/licenses/actions/validate-key',
+  const getLicenseID = async () => {
+    const response = await fetch(
+      'https://api.keygen.sh/v1/accounts/kacey-dev/me',
+      {
+        method: 'GET',
+        headers: {
+          Accept: 'application/vnd.api+json',
+          Authorization: `Bearer ${activationToken}`,
+        },
+      }
+    );
+
+    const { data, errors } = await response.json();
+
+    if (Array.isArray(errors) && errors.length > 0) {
+      if (Array.isArray(errors)) {
+        errors.forEach((error: any) => {
+          if (error && error.code) {
+            messageApi.error({
+              type: 'error',
+              content: `${error.code}\n${error.detail}`,
+            });
+          } else {
+            console.log(error);
+          }
+        });
+      } else {
+        console.log(errors);
+      }
+    }
+
+    if (data.attributes.key !== licenseKey) {
+      messageApi.error({
+        type: 'error',
+        content:
+          'Keys do not match! Please verify Activation Key and License Key',
+      });
+      throw new Error(
+        'Keys do not match! Please verify Activation Key and License Key'
+      );
+    }
+
+    return { data };
+  };
+
+  const assignMachine = async (lid: any, fingerprint: any) => {
+    let licenseId;
+    if (lid.data && lid.data.id) {
+      licenseId = lid.data.id;
+    }
+    const response = await fetch(
+      'https://api.keygen.sh/v1/accounts/kacey-dev/machines',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/vnd.api+json',
           Accept: 'application/vnd.api+json',
+          Authorization: `Bearer ${activationToken}`,
         },
         body: JSON.stringify({
-          meta: {
-            key,
-            scope: {
-              fingerprint: id,
+          data: {
+            type: 'machines',
+            attributes: {
+              fingerprint,
+            },
+            relationships: {
+              license: {
+                data: {
+                  type: 'licenses',
+                  id: licenseId,
+                },
+              },
             },
           },
         }),
       }
     );
-    const { meta, errors } = await validation.json();
-    if (errors) {
-      messageApi.error({
-        type: 'error',
-        content: `Error: ${errors[0].title} ${errors[0].detail}`,
-      });
-      console.log(JSON.stringify(errors));
+
+    const { data, errors } = await response.json();
+
+    if (errors && errors.length > 0) {
       throw errors;
     }
-    if (!meta.valid) {
-      messageApi.error({
-        type: 'error',
-        content: `Error: ${meta.code} ${meta.detail}`,
-      });
-      console.log(meta);
-      throw errors;
-    }
-    return meta.code;
+
+    return data;
+  };
+
+  async function validateLicenseKey() {
+    window.electron.store.bet();
+    const id = window.electron.store.get('machineID');
+    const licenseID = await getLicenseID();
+
+    const data = await assignMachine(licenseID, id);
+
+    return data;
   }
 
-  const enterValidating = (key: string) => {
+  const enterValidating = () => {
     setValidating(true);
-    validateLicenseKey(key.trim())
+    validateLicenseKey()
       .then((res) => {
-        setValidating(false);
-        messageApi.success({
-          type: 'success',
-          content: 'Succcess: ENJOY!!',
-        });
-        onSetValidated(true);
+        if (res) {
+          setValidating(false);
+          messageApi.success({
+            type: 'success',
+            content: 'Succcess: ENJOY!!',
+          });
+          onSetValidated(true);
+          return '';
+        }
         return '';
       })
       .catch((e) => {
         setValidating(false);
-        onSetValidated(false);
-        console.log(e);
+        if (Array.isArray(e)) {
+          e.forEach((error: any) => {
+            if (error && error.code) {
+              messageApi.error({
+                type: 'error',
+                content: `${error.code}\n${error.detail}`,
+              });
+            } else {
+              console.log(error);
+            }
+          });
+        } else {
+          console.log(e);
+        }
       });
   };
 
@@ -492,6 +566,11 @@ const Chat = () => {
   const onChatSizeChange = (newValue: number) => {
     setChatFontSize(newValue);
     window.electron.store.set('chatFontSize', newValue);
+  };
+
+  const onChatBlockSizeChange = (newValue: number) => {
+    setChatBlockSize(newValue);
+    window.electron.store.set('chatBlockSize', newValue);
   };
 
   const showModal = () => {
@@ -626,6 +705,11 @@ const Chat = () => {
   const onFilterNonModsEnabled = (e: CheckboxChangeEvent) => {
     setFilterNonModsEnabled(e.target.checked);
     window.electron.store.set('filterNonModsEnabled', e.target.checked);
+  };
+
+  const onFilterCommandsEnabled = (e: CheckboxChangeEvent) => {
+    setFilterCommandsEnabled(e.target.checked);
+    window.electron.store.set('filterCommandsEnabled', e.target.checked);
   };
 
   const onFilterEmotesEnabled = (e: CheckboxChangeEvent) => {
@@ -773,12 +857,12 @@ const Chat = () => {
     msg.message = parse(msg.message, msg.emotes, options);
     if (
       msg.message.includes(
-        "&lt<img src ='https://static-cdn.jtvnw.net/emoticons/v2/555555584/default/light/2.0' class='twitch-emote'/>"
+        "&lt<img src ='https://static-cdn.jtvnw.net/emoticons/v2/555555584/default/light/"
       )
     )
       msg.message = msg.message.replaceAll(
-        "&lt<img src ='https://static-cdn.jtvnw.net/emoticons/v2/555555584/default/light/2.0' class='twitch-emote'/>",
-        "<img src ='https://static-cdn.jtvnw.net/emoticons/v2/555555584/default/light/2.0' class='twitch-emote'/>"
+        "&lt<img src ='https://static-cdn.jtvnw.net/emoticons/v2/555555584/default/light/",
+        "<img src ='https://static-cdn.jtvnw.net/emoticons/v2/555555584/default/light/"
       );
 
     console.log(JSON.stringify(msg, null, 6));
@@ -844,6 +928,7 @@ const Chat = () => {
         style={{
           minWidth: '342px',
         }}
+        className="noDrag"
       >
         <div>
           <div className="splashInfo">
@@ -860,11 +945,11 @@ const Chat = () => {
         style={{
           minWidth: '342px',
         }}
+        className="noDrag"
       >
         <div>
           <div className="settingsValidate">
             <h2>License Key 🔑</h2>
-            <br />
             <Input
               value={licenseKey}
               className="licenseInput"
@@ -872,6 +957,16 @@ const Chat = () => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setLicenseKey(e.target.value);
                 window.electron.store.set('licenseKey', e.target.value);
+              }}
+            />
+            <h2>Activation Key 🔑</h2>
+            <Input
+              value={activationToken}
+              className="licenseInput"
+              placeholder="activ-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXv3"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setActivationToken(e.target.value);
+                window.electron.store.set('activationToken', e.target.value);
               }}
             />
             <div style={{ minHeight: '10px' }} />
@@ -890,7 +985,7 @@ const Chat = () => {
                   type="primary"
                   icon={<FaKey />}
                   loading={validating}
-                  onClick={() => enterValidating(licenseKey)}
+                  onClick={() => enterValidating()}
                   className="validateButton"
                 >
                   &nbsp; Validate!
@@ -916,6 +1011,7 @@ const Chat = () => {
         style={{
           minWidth: '342px',
         }}
+        className="noDrag"
       >
         <div>
           <div className="settings">
@@ -996,6 +1092,7 @@ const Chat = () => {
                           : 0
                       }
                     />
+
                     <hr className="solid" />
                   </Panel>
                 </Collapse>
@@ -1216,6 +1313,14 @@ const Chat = () => {
                   value={typeof chatFontSize === 'number' ? chatFontSize : 0}
                 />
                 <br />
+                <h3>Chat Block Size</h3>
+                <Slider
+                  min={0}
+                  max={30}
+                  onChange={onChatBlockSizeChange}
+                  value={typeof chatBlockSize === 'number' ? chatBlockSize : 0}
+                />
+                <br />
                 <h3>Emote Size</h3>
                 <Slider
                   min={1}
@@ -1278,7 +1383,7 @@ const Chat = () => {
               </Panel>
               <Panel header={<h1>Chat Filters</h1>} key={5} style={panelStyle}>
                 <Collapse bordered={false}>
-                  <Panel header="Author Filters" key={1} style={panelStyle}>
+                  <Panel header="Filters" key={1} style={panelStyle}>
                     <Checkbox
                       checked={filterCommonBotsEnabled}
                       onChange={onFilterCommonBotsEnabled}
@@ -1302,6 +1407,12 @@ const Chat = () => {
                       onChange={onFilterNonModsEnabled}
                     >
                       <h3>Filter Non Moderators</h3>
+                    </Checkbox>
+                    <Checkbox
+                      checked={filterCommandsEnabled}
+                      onChange={onFilterCommandsEnabled}
+                    >
+                      <h3>Filter !commands</h3>
                     </Checkbox>
                   </Panel>
                 </Collapse>
@@ -1353,7 +1464,8 @@ const Chat = () => {
                   msg.message &&
                   !filterNonSubs(msg, filterNonSubsEnabled) &&
                   !filterNonVips(msg, filterNonVipsEnabled) &&
-                  !filterNonMods(msg, filterNonModsEnabled)
+                  !filterNonMods(msg, filterNonModsEnabled) &&
+                  !filterCommands(msg, filterCommandsEnabled)
                 ) {
                   msg.message = filterEmotes(msg, filterEmotesEnabled);
                   return (
@@ -1373,15 +1485,18 @@ const Chat = () => {
                             overflowWrap: 'break-word',
                             fontWeight: 'bold',
                             textShadow: usernameShadowByType(msg),
+                            margin: `${chatBlockSize}px`,
                           }}
                         >
                           {msg.username}
-                        </h3>{' '}
+                        </h3>
                         <p
                           style={{
                             color: `rgba(${chatColor.r},${chatColor.g},${chatColor.b},${chatColor.a})`,
                             fontSize: chatFontSize,
                             textShadow: messageShadow ? '2px 2px black' : '',
+                            padding: '0px',
+                            margin: `${chatBlockSize}px`,
                           }}
                           dangerouslySetInnerHTML={{
                             __html: Autolinker.link(msg.message, {
@@ -1404,7 +1519,6 @@ const Chat = () => {
               title="Settings"
               onClick={showModal}
             />
-            <IoMdArrowDropdownCircle size={30} onClick={scrollToBottom} />
             <MdPowerSettingsNew
               size={30}
               style={{
@@ -1412,14 +1526,17 @@ const Chat = () => {
               }}
               onClick={() => window.close()}
             />
-            <IoMdInformationCircleOutline
+            {/* <IoMdInformationCircleOutline
               style={{
                 float: 'right',
               }}
               size={30}
-              onClick={() => showInfoModal()}
-            />
-            {!isValidated ? (
+              onClick={() => {
+
+                console.log(availableFonts);
+              }}
+            /> */}
+            {/* {!isValidated ? (
               <CiLock
                 style={{
                   float: 'right',
@@ -1439,7 +1556,7 @@ const Chat = () => {
                   showValidateModal();
                 }}
               />
-            )}
+            )} */}
           </div>
         </div>
       </div>

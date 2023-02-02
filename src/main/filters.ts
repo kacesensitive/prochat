@@ -3,12 +3,12 @@ import { Message } from 'types/Messages';
 export const filterCommonBots = (author: string, enabled: boolean) => {
   if (enabled) {
     return [
-      'Streamelements',
-      'Streamlabs',
-      'Moobot',
-      'Nightbot',
-      'Fossabot',
-    ].includes(author);
+      'streamelements',
+      'streamlabs',
+      'moobot',
+      'nightbot',
+      'fossabot',
+    ].includes(author.toLocaleLowerCase());
   }
   return false;
 };
@@ -30,6 +30,15 @@ export const filterNonVips = (msg: Message, enabled: boolean) => {
 export const filterNonMods = (msg: Message, enabled: boolean) => {
   if (enabled) {
     return !msg.badges?.moderator;
+  }
+  return false;
+};
+
+export const filterCommands = (msg: Message, enabled: boolean) => {
+  if (enabled) {
+    const words = msg.message.split(' ');
+    const messageContainsCommand = words.length === 1 && words[0][0] === '!';
+    return messageContainsCommand || false;
   }
   return false;
 };
