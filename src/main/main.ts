@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
@@ -147,6 +148,7 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
+  // eslint-disable-next-line promise/always-return
   .then(() => {
     createWindow();
     app.on('activate', () => {
