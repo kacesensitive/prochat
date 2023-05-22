@@ -10,21 +10,21 @@
 
 <div align="center">
 
-[![Build Status][github-actions-status]][github-actions-url])
+[![Build Status][github-actions-status]][github-actions-url]
 
 </div>
+
+## Made With
+https://electron-react-boilerplate.js.org/
 
 ## Install
 
 Clone the repo and install dependencies:
 
 ```bash
-git clone --depth 1 --branch main ...url... your-project-name
-cd your-project-name
+git clone project or fork ur
 npm install
 ```
-
-**Having issues installing? See this [debugging guide](https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/400)**
 
 ## Starting Development
 
@@ -41,18 +41,3 @@ To package apps for the local platform:
 ```bash
 npm run package
 ```
-
-## Docs
-
-See our [docs and guides here](https://electron-react-boilerplate.js.org/docs/installation)
-
-## Community
-
-Join our Discord: https://discord.gg/
-
-[github-actions-status]: https://github.com/electron-react-boilerplate/electron-react-boilerplate/workflows/Test/badge.svg
-[github-actions-url]: https://github.com/electron-react-boilerplate/electron-react-boilerplate/actions
-[github-tag-image]: https://img.shields.io/github/tag/electron-react-boilerplate/electron-react-boilerplate.svg?label=version
-[github-tag-url]: https://github.com/electron-react-boilerplate/electron-react-boilerplate/releases/latest
-[stackoverflow-img]: https://img.shields.io/badge/stackoverflow-electron_react_boilerplate-blue.svg
-[stackoverflow-url]: https://stackoverflow.com/questions/tagged/electron-react-boilerplate
