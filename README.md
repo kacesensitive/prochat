@@ -10,8 +10,6 @@
 
 <div align="center">
 
-[![Build Status][github-actions-status]][github-actions-url]
-
 </div>
 
 ## Made With
