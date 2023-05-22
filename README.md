@@ -12,6 +12,8 @@
 
 </div>
 
+![Website Preview](website.gif)
+
 ## Description
 
 ProChat is a chat monitor for Twitch. It overlays on top of other applications and has a trnasparent (or whatever color you want really) background. Try it out!
